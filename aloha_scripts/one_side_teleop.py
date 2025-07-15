@@ -17,7 +17,6 @@ def prep_robots(master_bot, puppet_bot):
     master_bot.dxl.robot_set_operating_modes("single", "gripper", "position")
     # puppet_bot.dxl.robot_set_motor_registers("single", "gripper", 'current_limit', 1000) # TODO(tonyzhaozh) figure out how to set this limit
     torque_on(puppet_bot)
-    torque_on(master_bot)
 
     # move arms to starting position
     start_arm_qpos = START_ARM_POSE[:6]
@@ -33,11 +32,6 @@ def press_to_start(master_bot):
     print(f'Close the gripper to start')
     close_thresh = -0.3
     pressed = False
-    while not pressed:
-        gripper_pos = get_arm_gripper_positions(master_bot)
-        if gripper_pos < close_thresh:
-            pressed = True
-        time.sleep(DT/10)
     torque_off(master_bot)
     print(f'Started!')
 
