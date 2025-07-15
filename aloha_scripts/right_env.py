@@ -8,7 +8,7 @@ from constants import DT, START_ARM_POSE, MASTER_GRIPPER_JOINT_NORMALIZE_FN, PUP
 from constants import PUPPET_GRIPPER_POSITION_NORMALIZE_FN, PUPPET_GRIPPER_VELOCITY_NORMALIZE_FN
 from constants import PUPPET_GRIPPER_JOINT_OPEN, PUPPET_GRIPPER_JOINT_CLOSE
 from robot_utils import Recorder, ImageRecorder
-from robot_utils import setup_master_bot, setup_puppet_bot, move_arms, move_grippers
+from robot_utils import setup_master_bot, setup_puppet_bot, move_arms, move_grippers, torque_on
 from interbotix_xs_modules.arm import InterbotixManipulatorXS
 from interbotix_xs_msgs.msg import JointSingleCommand
 
@@ -41,7 +41,11 @@ class RealEnv:
         self.gripper_command = JointSingleCommand(name="gripper")
 
     def setup_robots(self):
-        setup_puppet_bot(self.puppet_bot_right)
+        self.puppet_bot_right.dxl.robot_reboot_motors("single", "gripper", True)
+        self.puppet_bot_right.dxl.robot_set_operating_modes("group", "arm", "position")
+        self.puppet_bot_right.dxl.robot_set_operating_modes("single", "gripper", "current_based_position")
+        torque_on(self.puppet_bot_right)
+
 
     def get_qpos(self):
         right_qpos_raw = self.recorder_right.qpos
